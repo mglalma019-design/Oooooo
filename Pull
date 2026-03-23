@@ -1,0 +1,129 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local TweenService = game:GetService("TweenService")
+local Player = game.Players.LocalPlayer
+
+local Window = Rayfield:CreateWindow({
+   Name = "pull a lucky blox",
+   LoadingTitle = "pull a lucky blox",
+   LoadingSubtitle = "by botakhubs",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "BotakHubsConfig",
+      FileName = "LuckyBloxHub"
+   },
+   KeySystem = false
+})
+
+-- High-Speed Tween Logic (700 Speed)
+local function SmoothTeleport(targetCFrame)
+    local character = Player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    local hrp = character.HumanoidRootPart
+    
+    local distance = (hrp.Position - targetCFrame.Position).Magnitude
+    local speed = 700 
+    local tweenTime = distance / speed
+
+    hrp.Anchored = true
+    local tweenInfo = TweenInfo.new(tweenTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
+
+    tween.Completed:Connect(function()
+        hrp.Anchored = false
+    end)
+    tween:Play()
+end
+
+local MainTab = Window:CreateTab("Teleports", 4483362458)
+
+MainTab:CreateButton({
+   Name = "Secret",
+   Callback = function()
+      SmoothTeleport(CFrame.new(205.087494, 77.0500031, -471.564819, 0, 0, 1, -1, 0, 0, 0, -1, 0))
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Brainrot GD",
+   Callback = function()
+      SmoothTeleport(CFrame.new(205.087494, 77.0500031, -691.761902, 0, 0, 1, -1, 0, 0, 0, -1, 0))
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "OG",
+   Callback = function()
+      SmoothTeleport(CFrame.new(205.087494, 77.0500031, -958.144165, 0, 0, 1, -1, 0, 0, 0, -1, 0))
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Instant",
+   Callback = function()
+      SmoothTeleport(CFrame.new(195.25, 0.599998236, 281, -1, 0, -0, 0, 0, -1, 0, -1, -0))
+   end,
+})
+
+local PlayerTab = Window:CreateTab("Player", 4483362458)
+
+PlayerTab:CreateSlider({
+   Name = "WalkSpeed",
+   Range = {1, 500},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "WS_Slider",
+   Callback = function(Value)
+      if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+         Player.Character.Humanoid.WalkSpeed = Value
+      end
+   end,
+})
+
+PlayerTab:CreateSlider({
+   Name = "JumpPower",
+   Range = {50, 500},
+   Increment = 1,
+   Suffix = "Power",
+   CurrentValue = 50,
+   Flag = "JP_Slider",
+   Callback = function(Value)
+      if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+         Player.Character.Humanoid.JumpPower = Value
+         Player.Character.Humanoid.UseJumpPower = true
+      end
+   end,
+})
+
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+MiscTab:CreateToggle({
+   Name = "Instant Interact",
+   CurrentValue = false,
+   Flag = "InstantInteract",
+   Callback = function(Value)
+      _G.InstantInteract = Value
+      if Value then
+         local function optimizePrompt(prompt)
+            if prompt:IsA("ProximityPrompt") then
+               prompt.HoldDuration = 0
+               prompt.MaxActivationDistance = 25 
+            end
+         end
+         for _, v in pairs(game:GetDescendants()) do optimizePrompt(v) end
+         _G.PromptConnection = game.DescendantAdded:Connect(function(descendant)
+            if _G.InstantInteract then optimizePrompt(descendant) end
+         end)
+      else
+         if _G.PromptConnection then _G.PromptConnection:Disconnect() end
+      end
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Destroy UI",
+   Callback = function()
+      if _G.PromptConnection then _G.PromptConnection:Disconnect() end
+      Rayfield:Destroy()
+   end,
+})
